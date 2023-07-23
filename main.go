@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	cli "github.com/urfave/cli/v2"
@@ -16,6 +17,12 @@ const (
 	usage = ""
 )
 
+type Document struct {
+	ID    int64
+	Title string
+	Body  string
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Version = Version
@@ -28,6 +35,17 @@ func main() {
 			Usage:   "build index",
 			Action: func(c *cli.Context) error {
 				fmt.Println("Starting to build index...")
+				docs := []*Document{
+					{Title: "Test Title", Body: "Test Body"},
+					{Title: "Test Title Two", Body: "Test Body Two"},
+					{Title: "Test Title Three", Body: "Test Body Three Test"},
+					{Title: "Test Title Four", Body: "Test Body Four"},
+					{Title: "Test Title Five", Body: "Test Body Five Test"},
+				}
+				err := addDocs(docs)
+				if err != nil {
+					log.Fatalln("Fail add Docs: ", err)
+				}
 				return nil
 			},
 		},

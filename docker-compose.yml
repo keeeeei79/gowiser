@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:13
+    container_name: postgresql
+    ports:
+      - 35432:5432
+    volumes:
+      - ./_db/data:/var/lib/postgresql/data
+      - ./_db/init:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: gowiser
+      POSTGRES_PASSWORD: gowiser
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    hostname: postgres
+    restart: always
