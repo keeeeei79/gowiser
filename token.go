@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"strings"
 )
 
@@ -8,6 +9,7 @@ func textToPostingLists(invertedIndex InvertedIndex, doc *Document) error {
 	for i, t := range tokenize(doc.Body) {
 		err := tokenToPostingList(invertedIndex, t, doc.ID, int64(i))
 		if err != nil {
+			log.Println("Fail to token to PostingList")
 			return err
 		}
 	}

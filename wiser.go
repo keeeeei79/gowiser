@@ -2,45 +2,54 @@ package main
 
 import (
 	"log"
+
+	"github.com/jmoiron/sqlx"
 )
 
 const updateThreshold = 2
 
 type InvertedIndex = map[string][]*Posting
 
-func addDocs(docs []*Document) error {
+func addDocs(db *sqlx.DB, docs []*Document) error {
 	invertedIndex := make(map[string][]*Posting)
 	for i, doc := range docs {
-		docID, err := dbAddDocument(doc)
+		docID, err := dbAddDocument(db, doc)
 		if err != nil {
-			log.Fatalln("Fail to add a document: ", err)
+			log.Println("Fail to add a document: ", err)
+			return err
 		}
 		doc.ID = docID
 		// 文書をtokenに分割し、転置インデックスに格納する
 		err = textToPostingLists(invertedIndex, doc)
 		if err != nil {
-			log.Fatalln("Fail to convert to inverted index: ", err)
+			log.Println("Fail to convert to inverted index: ", err)
+			return err
 		}
 		// 所定の文書数が貯まったらストレージ上の転置インデックスとマージして更新
 		if i != 0 && i%updateThreshold == 0 {
-			err = mergeInvertedIndex(invertedIndex)
+			err = mergeInvertedIndex(db, invertedIndex)
 			if err != nil {
-				log.Fatalln("Fail to merge with inverted index in db: ", err)
+				log.Println("Fail to merge with inverted index in db: ", err)
+				return err
 			}
 			invertedIndex = make(map[string][]*Posting)
 		}
 	}
-	err := mergeInvertedIndex(invertedIndex)
-	if err != nil {
-		log.Fatalln("Fail to merge with inverted index in db: ", err)
+	if len(invertedIndex) > 0 {
+		err := mergeInvertedIndex(db, invertedIndex)
+		if err != nil {
+			log.Println("Fail to merge with inverted index in db: ", err)
+			return err
+		}
+
 	}
 	return nil
 }
 
-func mergeInvertedIndex(invertedIndex InvertedIndex) error {
+func mergeInvertedIndex(db *sqlx.DB, invertedIndex InvertedIndex) error {
 	for token, postings := range invertedIndex {
 		for _, p := range postings {
-			err := dbUpsertPosting(token, p)
+			err := dbUpsertInvertedIndex(db, token, p)
 			if err != nil {
 				return err
 			}

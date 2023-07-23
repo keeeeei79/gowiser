@@ -14,3 +14,4 @@ CREATE TABLE inverted_index (
     "positions" integer[] NOT NULL,
     UNIQUE(token, doc_id)
 );
+CREATE INDEX inverted_index_token_idx ON inverted_index (token);

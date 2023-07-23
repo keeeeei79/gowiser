@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/jmoiron/sqlx"
 	cli "github.com/urfave/cli/v2"
 )
 
@@ -35,6 +36,11 @@ func main() {
 			Usage:   "build index",
 			Action: func(c *cli.Context) error {
 				fmt.Println("Starting to build index...")
+				db, err := sqlx.Connect("pgx", "host=127.0.0.1 port=35432 dbname=gowiser user=gowiser password=gowiser sslmode=disable")
+				defer db.Close()
+				if err != nil {
+					log.Fatalln("Fail to connect DB", err)
+				}
 				docs := []*Document{
 					{Title: "Test Title", Body: "Test Body"},
 					{Title: "Test Title Two", Body: "Test Body Two"},
@@ -42,9 +48,9 @@ func main() {
 					{Title: "Test Title Four", Body: "Test Body Four"},
 					{Title: "Test Title Five", Body: "Test Body Five Test"},
 				}
-				err := addDocs(docs)
+				err = addDocs(db, docs)
 				if err != nil {
-					log.Fatalln("Fail add Docs: ", err)
+					log.Fatalln("Fail to add Docs: ", err)
 				}
 				return nil
 			},
