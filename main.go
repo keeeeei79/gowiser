@@ -59,8 +59,21 @@ func main() {
 			Name:    "search",
 			Aliases: []string{"s"},
 			Usage:   "search",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "keyword",
+					Usage: "keyword you want to search",
+				},
+			},
 			Action: func(c *cli.Context) error {
 				fmt.Println("Starting to search...")
+				db, err := sqlx.Connect("pgx", "host=127.0.0.1 port=35432 dbname=gowiser user=gowiser password=gowiser sslmode=disable")
+				defer db.Close()
+				if err != nil {
+					log.Fatalln("Fail to connect DB", err)
+				}
+				keyword := c.String("keyword")
+				search(db, keyword)
 				return nil
 			},
 		},

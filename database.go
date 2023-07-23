@@ -59,3 +59,29 @@ func dbUpsertInvertedIndex(db *sqlx.DB, token string, posting *Posting) error {
 	fmt.Println(token, "was inserted to inverted index successfully")
 	return nil
 }
+
+func dbSearch(db *sqlx.DB, keyword string) ([]*Document, error) {
+	var docIDs []int64
+	err := db.Select(&docIDs, "SELECT doc_id FROM public.inverted_index WHERE token = $1", keyword)
+	if err != nil {
+		log.Println("Fail to select from inverted index")
+		return nil, err
+	}
+	fmt.Println("Hit docs ids: ", docIDs)
+
+	sql := "SELECT * FROM public.document WHERE id IN (?) ORDER BY id"
+	sql, params, err := sqlx.In(sql, docIDs)
+	if err != nil {
+		log.Println("Fail to use IN")
+		return nil, err
+	}
+	sql = db.Rebind(sql)
+
+	var docs []*Document
+	err = db.Select(&docs, sql, params...)
+	if err != nil {
+		log.Println("Fail to select from document")
+		return nil, err
+	}
+	return docs, nil
+}

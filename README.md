@@ -9,7 +9,7 @@ docker compose up
 go run ./ i
 ```
 
-
-## TODO
-- dbの接続を最初の一回にする
-- tokenizerを頑張る
+## 単語検索
+```
+go run ./ s --keyword Test
+```

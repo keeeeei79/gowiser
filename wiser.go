@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/jmoiron/sqlx"
@@ -56,4 +57,15 @@ func mergeInvertedIndex(db *sqlx.DB, invertedIndex InvertedIndex) error {
 		}
 	}
 	return nil
+}
+
+func search(db *sqlx.DB, keyword string) {
+	docs, err := dbSearch(db, keyword)
+	if err != nil {
+		log.Println("Fail to dbSearch: ", err)
+		return
+	}
+	for _, d := range docs {
+		fmt.Println(fmt.Sprintf("ID: %v, Title: %v, Body: %v", d.ID, d.Title, d.Body))
+	}
 }
