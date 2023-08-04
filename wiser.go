@@ -60,12 +60,13 @@ func mergeInvertedIndex(db *sqlx.DB, invertedIndex InvertedIndex) error {
 }
 
 func search(db *sqlx.DB, keyword string) {
-	docs, err := dbSearch(db, keyword)
+	tokens := tokenize(keyword)
+	res, err := searchDocs(db, tokens)
 	if err != nil {
-		log.Println("Fail to dbSearch: ", err)
+		log.Println("Fail to search docs: ", err)
 		return
 	}
-	for _, d := range docs {
+	for _, d := range res {
 		fmt.Println(fmt.Sprintf("ID: %v, Title: %v, Body: %v", d.ID, d.Title, d.Body))
 	}
 }

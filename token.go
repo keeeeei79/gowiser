@@ -18,7 +18,7 @@ func textToPostingLists(invertedIndex InvertedIndex, doc *Document) error {
 
 func tokenize(s string) []string {
 	// TODO: 色々拡張できる
-	return strings.Split(s, " ")
+	return strings.Split(strings.ToLower(s), " ")
 }
 
 func tokenToPostingList(invertedIndex InvertedIndex, token string, docID int64, pos int64) error {

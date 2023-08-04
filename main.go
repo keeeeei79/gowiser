@@ -43,10 +43,10 @@ func main() {
 				}
 				docs := []*Document{
 					{Title: "Test Title", Body: "Test Body"},
-					{Title: "Test Title Two", Body: "Test Body Two"},
-					{Title: "Test Title Three", Body: "Test Body Three Test"},
-					{Title: "Test Title Four", Body: "Test Body Four"},
-					{Title: "Test Title Five", Body: "Test Body Five Test"},
+					{Title: "Test Title Two", Body: "Test Hand"},
+					{Title: "Test Title Three", Body: "Test Body Two"},
+					{Title: "Test Title Four", Body: "Test Foot"},
+					{Title: "Test Title Five", Body: "Test Body Two Three"},
 				}
 				err = addDocs(db, docs)
 				if err != nil {

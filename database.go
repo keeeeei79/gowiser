@@ -67,7 +67,10 @@ func dbSearch(db *sqlx.DB, keyword string) ([]*Document, error) {
 		log.Println("Fail to select from inverted index")
 		return nil, err
 	}
-	fmt.Println("Hit docs ids: ", docIDs)
+	fmt.Println(keyword, "Hit docs ids: ", docIDs)
+	if (len(docIDs)== 0){
+		return []*Document{}, nil
+	}
 
 	sql := "SELECT * FROM public.document WHERE id IN (?) ORDER BY id"
 	sql, params, err := sqlx.In(sql, docIDs)
